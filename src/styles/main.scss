@@ -1,0 +1,46 @@
+@use './variables' as *;
+@use './mixins' as *;
+@use './zuari/aether.css';
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: $color-bg-base;
+  color: $color-text-primary;
+  font-family: $font-sans;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  letter-spacing: -0.015em;
+  @include custom-scroll;
+}
+
+::selection {
+  background-color: rgba(255, 87, 34, 0.35);
+  color: #ffffff;
+}
+
+button,
+.segment-pill,
+.badge-spark,
+.box-tag,
+.box-counter,
+.prio-tag,
+.energy-pip,
+.neural-chip,
+.cmd-trigger-btn,
+kbd,
+svg {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input:focus,
+button:focus,
+textarea:focus {
+  outline: none;
+}

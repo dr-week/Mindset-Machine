@@ -1,380 +1,448 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import {
+  BrainCircuit,
+  LayoutGrid,
+  Search,
+  BookOpen,
+  Clock,
+  Database,
+  Flame,
+  Activity,
+  CheckSquare,
+  Target,
+} from 'lucide-vue-next'
+import CommandPalette from '@/components/CommandPalette.vue'
+import EveningAuditModal from '@/components/EveningAuditModal.vue'
+import HunterDirectiveCard from '@/components/dashboard/HunterDirectiveCard.vue'
+import VelocityCard from '@/components/dashboard/VelocityCard.vue'
+import ExecutionQueueCard from '@/components/dashboard/ExecutionQueueCard.vue'
+import VisionDirectivesCard from '@/components/dashboard/VisionDirectivesCard.vue'
+import AiSuggestionsCard from '@/components/dashboard/AiSuggestionsCard.vue'
+import ActivityView from '@/components/activity/ActivityView.vue'
+import TasksView from '@/components/tasks/TasksView.vue'
+import GoalsView from '@/components/goals/GoalsView.vue'
+import TimetableView from '@/components/timetable/TimetableView.vue'
+import HabitsView from '@/components/habits/HabitsView.vue'
+import NotesView from '@/components/notes/NotesView.vue'
+import VaultView from '@/components/vault/VaultView.vue'
 import { useTasksStore } from '@/store/tasks'
+import type { ActiveTab } from '@/types/mindset'
 
 const tasksStore = useTasksStore()
+const executionQueueRef = ref<InstanceType<typeof ExecutionQueueCard> | null>(null)
 
-const isSidebarCollapsed = ref(false)
-const newGoalTitle = ref('')
-
-const sidebarItems = [
-  { label: 'Dashboard', key: 'dashboard' },
-  { label: 'Goals', key: 'goals' },
-  { label: 'Tasks', key: 'tasks' },
-  { label: 'AI Insights', key: 'ai' },
-  { label: 'AI Database', key: 'database' },
+const tabs = [
+  { key: 'dashboard' as ActiveTab, icon: LayoutGrid, label: 'Dashboard' },
+  { key: 'tasks' as ActiveTab, icon: CheckSquare, label: 'Tasks' },
+  { key: 'goals' as ActiveTab, icon: Target, label: 'Vision' },
+  { key: 'activity' as ActiveTab, icon: Activity, label: 'Activity' },
+  { key: 'habits' as ActiveTab, icon: Flame, label: 'Habits' },
+  { key: 'timetable' as ActiveTab, icon: Clock, label: 'Timetable' },
+  { key: 'notes' as ActiveTab, icon: BookOpen, label: 'Notes' },
+  { key: 'database' as ActiveTab, icon: Database, label: 'Vault' },
 ]
 
-onMounted(async () => {
-  // keep existing store behavior: if useMockData is true, AI will still work.
-  // Also try to refresh motivation so the AI panel isn't empty.
-  try {
-    if (typeof tasksStore.refreshMotivation === 'function') {
-      await tasksStore.refreshMotivation()
+function handleGlobalKeydown(e: KeyboardEvent): void {
+  const activeEl = document.activeElement as HTMLElement
+  const isTyping = activeEl && ['input', 'textarea'].includes(activeEl.tagName?.toLowerCase())
+
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+    if (isTyping) return
+    e.preventDefault()
+    tasksStore.undoLastDelete()
+  } else if (!e.ctrlKey && !e.metaKey && !e.altKey && (e.key === 'c' || e.key === 'n')) {
+    if (!isTyping) {
+      e.preventDefault()
+      executionQueueRef.value?.focusInput()
     }
-  } catch {
-    // ignore UI init errors
+  }
+}
+
+function triggerCommandPalette(): void {
+  window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))
+}
+
+onMounted(async () => {
+  window.addEventListener('keydown', handleGlobalKeydown)
+  if (!tasksStore.aiMotivation) {
+    await tasksStore.refreshMotivation()
   }
 })
 
-function toggleSidebar() {
-  isSidebarCollapsed.value = !isSidebarCollapsed.value
-}
-
-function addGoal() {
-  const title = newGoalTitle.value.trim()
-  if (!title) return
-  // store expects `text`
-  tasksStore.addGoal(title)
-  newGoalTitle.value = ''
-}
-
-type StoreGoal = { id: string; text: string; createdAt: string }
-type StoreTask = {
-  id: string
-  title: string
-  completed: boolean
-  projectId?: string | null
-  priority: string
-  createdAt: string
-  time?: string
-}
-
-type UiGoal = { id: string; title: string; completed: boolean }
-type UiTask = {
-  id: string
-  title: string
-  completed: boolean
-  time?: string
-  priority: string
-  createdAt: string
-}
-
-const goals = computed<UiGoal[]>(() => {
-  const raw = (tasksStore.goals || []) as StoreGoal[]
-  return raw.map((g) => ({
-    id: g.id,
-    title: g.text,
-    completed: false,
-  }))
-})
-
-const tasks = computed<UiTask[]>(() => (tasksStore.tasks || []) as StoreTask[])
-const completedTaskCount = computed(() => tasks.value.filter((t) => t.completed).length)
-const totalTaskCount = computed(() => tasks.value.length)
-const goalsCount = computed(() => goals.value.length)
-const taskCompletionPct = computed(() => {
-  if (!totalTaskCount.value) return 0
-  return Math.round((completedTaskCount.value / totalTaskCount.value) * 100)
-})
-
-const goalCompletionPct = computed(() => {
-  if (!goalsCount.value) return 0
-  // store goals currently have no completion state
-  // so we show 0% until completion is added.
-  return 0
-})
-
-const aiMotivation = computed(() => tasksStore.aiMotivation || '')
-
-function toggleTask(id: string) {
-  // store function is named toggleTask
-  tasksStore.toggleTask(id)
-}
-
-function deleteTask(id: string) {
-  tasksStore.deleteTask(id)
-}
-
-const productSuiteTasks = computed(() => {
-  // No project grouping exists yet in store.
-  // Use priority to simulate two groups.
-  return tasks.value.filter((t) => t.priority !== 'low')
-})
-
-const growthSprintTasks = computed(() => {
-  return tasks.value.filter((t) => t.priority === 'low')
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleGlobalKeydown)
 })
 </script>
 
 <template>
-  <div class="w-full max-w-7xl mx-auto p-6 animate-fade-in">
-    <div class="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
-      <section
-        class="border border-border bg-panel p-6 rounded-2xl flex flex-col justify-between transition-all"
-      >
-        <div class="flex items-center justify-between gap-3">
-          <div>
-            <p class="text-xs uppercase tracking-[0.35em] text-zinc-500">Workspace</p>
-            <h2 class="text-lg font-semibold tracking-tight text-zinc-100">Focus cockpit</h2>
-          </div>
-          <button
-            @click="toggleSidebar"
-            class="rounded-xl border border-border/50 bg-background/70 px-3 py-2 text-[11px] uppercase tracking-[0.3em] text-zinc-300 transition hover:bg-background/90"
-          >
-            {{ isSidebarCollapsed ? 'Expand' : 'Collapse' }}
-          </button>
+  <div class="bento-universe">
+    <!-- ✦ TOP FLOATING APEX DOCK ✦ -->
+    <header class="apex-dock">
+      <div class="dock-left">
+        <div class="brand-mark">
+          <BrainCircuit :size="18" class="brand-icon" />
         </div>
-
-        <div v-if="!isSidebarCollapsed" class="space-y-5 mt-6">
-          <div class="rounded-3xl border border-border/40 bg-background/30 p-4 space-y-4">
-            <div class="text-[10px] uppercase tracking-[0.35em] text-zinc-500">Stats</div>
-            <div class="grid gap-3">
-              <div class="rounded-2xl bg-zinc-950/70 p-3">
-                <div class="text-[10px] uppercase tracking-[0.35em] text-zinc-500">Goals</div>
-                <div class="mt-2 text-lg font-semibold text-zinc-100">{{ goalsCount }}</div>
-              </div>
-              <div class="rounded-2xl bg-zinc-950/70 p-3">
-                <div class="text-[10px] uppercase tracking-[0.35em] text-zinc-500">Tasks</div>
-                <div class="mt-2 text-lg font-semibold text-zinc-100">{{ totalTaskCount }}</div>
-              </div>
-              <div class="rounded-2xl bg-zinc-950/70 p-3">
-                <div class="text-[10px] uppercase tracking-[0.35em] text-zinc-500">Done</div>
-                <div class="mt-2 text-lg font-semibold text-zinc-100">{{ taskCompletionPct }}%</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="rounded-3xl border border-border/40 bg-background/30 p-4 space-y-3">
-            <div class="text-[10px] uppercase tracking-[0.35em] text-zinc-500">Navigation</div>
-            <div class="grid gap-2">
-              <button
-                v-for="item in sidebarItems"
-                :key="item.key"
-                class="w-full rounded-2xl border border-border/50 bg-zinc-950/50 px-4 py-3 text-left text-sm text-zinc-200 transition hover:bg-zinc-900"
-              >
-                {{ item.label }}
-              </button>
-            </div>
-          </div>
-
-          <div class="rounded-3xl border border-border/40 bg-background/30 p-4 space-y-3">
-            <div class="text-[10px] uppercase tracking-[0.35em] text-zinc-500">Quick actions</div>
-            <button
-              @click="addGoal()"
-              class="w-full rounded-2xl border border-border/50 bg-zinc-900 px-4 py-3 text-sm text-zinc-200 transition hover:bg-zinc-800"
-            >
-              Add goal
-            </button>
-            <button
-              @click="tasksStore.refreshMotivation()"
-              class="w-full rounded-2xl border border-border/50 bg-zinc-900 px-4 py-3 text-sm text-zinc-200 transition hover:bg-zinc-800"
-            >
-              Refresh AI motivation
-            </button>
-          </div>
-        </div>
-
-        <div
-          v-else
-          class="mt-6 rounded-3xl border border-border/40 bg-background/30 p-6 text-center text-xs uppercase tracking-[0.35em] text-zinc-500"
-        >
-          Sidebar collapsed
-        </div>
-      </section>
-
-      <div class="space-y-8">
-        <!-- 🌟 TOP HEADER BANNER -->
-        <header
-          class="border border-border bg-panel/40 backdrop-blur-md p-6 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-        >
-          <div>
-            <h1 class="text-xl font-semibold tracking-tight text-zinc-100">Dashboard</h1>
-            <p class="text-xs text-zinc-500 mt-1 font-light">
-              A premium workspace to track goals, projects, and AI-backed actions in a minimalist
-              framework.
-            </p>
-          </div>
-          <div
-            class="flex items-center space-x-3 bg-zinc-950 px-4 py-2 rounded-xl border border-border"
-          >
-            <span class="w-2 h-2 rounded-full bg-violet-400 animate-subtle-pulse"></span>
-            <span class="text-[11px] font-mono uppercase tracking-widest text-zinc-400"
-              >AI LIVE //</span
-            >
-          </div>
-        </header>
-
-        <!-- 📊 BENTO GRID LAYOUT -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <!-- COLUMN 1: GOALS (3/12 Width) -->
-          <section
-            class="lg:col-span-4 border border-border bg-panel p-6 rounded-2xl flex flex-col justify-between space-y-6"
-          >
-            <div class="space-y-4">
-              <div class="flex justify-between items-center">
-                <h2 class="text-xs font-mono uppercase tracking-widest text-zinc-500">Goals</h2>
-                <span
-                  class="text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-border px-2 py-0.5 rounded-md"
-                  >{{ goalCompletionPct }}% complete</span
-                >
-              </div>
-
-              <div class="grid grid-cols-2 gap-3">
-                <div class="p-3 rounded-xl border border-border/40 bg-background/40">
-                  <div class="text-[11px] font-mono text-zinc-500">Goals</div>
-                  <div class="text-lg font-semibold text-zinc-200">{{ goalsCount }}</div>
-                </div>
-                <div class="p-3 rounded-xl border border-border/40 bg-background/40">
-                  <div class="text-[11px] font-mono text-zinc-500">Tasks done</div>
-                  <div class="text-lg font-semibold text-zinc-200">{{ completedTaskCount }}</div>
-                </div>
-              </div>
-
-              <div class="space-y-2">
-                <div
-                  v-for="goal in goals"
-                  :key="goal.id"
-                  class="flex items-center space-x-3 p-3 bg-background/50 rounded-xl border border-border/40"
-                >
-                  <span class="w-1.5 h-1.5 rounded-full bg-zinc-600"></span>
-                  <span class="text-sm text-zinc-300 font-light">{{ goal.title }}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex items-center space-x-2 pt-4 border-t border-border/40">
-              <input
-                v-model="newGoalTitle"
-                @keyup.enter="addGoal"
-                type="text"
-                placeholder="Add new goal..."
-                class="w-full bg-transparent text-sm text-zinc-300 placeholder-zinc-600 focus:outline-none"
-              />
-              <button
-                @click="addGoal"
-                class="text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-3 py-1.5 rounded-lg transition-all border border-border"
-              >
-                Add
-              </button>
-            </div>
-          </section>
-
-          <!-- COLUMN 2: PROJECTS & TASKS (5/12 Width) -->
-          <section class="lg:col-span-5 border border-border bg-panel p-6 rounded-2xl space-y-6">
-            <div class="flex justify-between items-center">
-              <h2 class="text-xs font-mono uppercase tracking-widest text-zinc-500">
-                Projects & Tasks
-              </h2>
-            </div>
-
-            <!-- Project Block 1 -->
-            <div class="space-y-3">
-              <div class="flex items-center justify-between">
-                <h3 class="text-xs font-medium text-zinc-400 tracking-wide">Product Suite</h3>
-                <span
-                  class="text-[10px] font-mono text-emerald-400 bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded-md"
-                  >Active</span
-                >
-              </div>
-              <div class="space-y-1">
-                <div
-                  v-for="task in productSuiteTasks"
-                  :key="task.id"
-                  class="flex items-center justify-between p-3 bg-background/30 hover:bg-background/70 rounded-xl border border-border/20 group transition-all"
-                >
-                  <div class="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      :checked="task.completed"
-                      @change="toggleTask(task.id)"
-                      class="accent-violet-400 rounded cursor-pointer"
-                    />
-                    <span
-                      :class="task.completed ? 'line-through text-zinc-600' : 'text-zinc-200'"
-                      class="text-sm font-light"
-                      >{{ task.title }}</span
-                    >
-                  </div>
-                  <div class="flex items-center space-x-3">
-                    <span class="text-[11px] font-mono text-zinc-600">{{ task.time }}</span>
-                    <button
-                      @click="deleteTask(task.id)"
-                      class="text-xs text-zinc-600 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Project Block 2 -->
-            <div class="space-y-3 pt-2">
-              <div class="flex items-center justify-between">
-                <h3 class="text-xs font-medium text-zinc-400 tracking-wide">Growth Sprint</h3>
-                <span
-                  class="text-[10px] font-mono text-zinc-500 bg-zinc-900 border border-border px-2 py-0.5 rounded-md"
-                  >Planning</span
-                >
-              </div>
-              <div class="space-y-1">
-                <div
-                  v-for="task in growthSprintTasks"
-                  :key="task.id"
-                  class="flex items-center justify-between p-3 bg-background/30 hover:bg-background/70 rounded-xl border border-border/20 group transition-all"
-                >
-                  <div class="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      :checked="task.completed"
-                      @change="toggleTask(task.id)"
-                      class="accent-violet-400 rounded cursor-pointer"
-                    />
-                    <span class="text-sm text-zinc-200 font-light">{{ task.title }}</span>
-                  </div>
-                  <div class="flex items-center space-x-3">
-                    <span class="text-[11px] font-mono text-zinc-600">{{ task.time }}</span>
-                    <button
-                      @click="deleteTask(task.id)"
-                      class="text-xs text-zinc-600 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- COLUMN 3: AI INSIGHTS (3/12 Width) -->
-          <section
-            class="lg:col-span-3 border border-border bg-panel p-6 rounded-2xl flex flex-col justify-between space-y-6"
-          >
-            <div class="space-y-4">
-              <h2 class="text-xs font-mono uppercase tracking-widest text-violet-400/90">
-                AI Insights
-              </h2>
-              <div class="p-4 bg-violet-950/10 border border-violet-500/10 rounded-xl">
-                <p class="text-xs italic text-zinc-300 leading-relaxed font-light">
-                  "{{ aiMotivation }}"
-                </p>
-              </div>
-            </div>
-
-            <div class="space-y-3">
-              <div
-                class="border border-dashed border-border/60 p-6 rounded-xl text-center bg-background/20"
-              >
-                <p class="text-xs text-zinc-500">AI engine idle. Awaiting task patterns.</p>
-              </div>
-              <p class="text-[10px] text-center text-zinc-600 font-mono tracking-wide">
-                Delivered from AI analysis with subtle clarity.
-              </p>
-            </div>
-          </section>
+        <div class="brand-info">
+          <span class="brand-name">MINDSET MACHINE</span>
+          <span class="brand-badge">PRO</span>
         </div>
       </div>
-    </div>
+
+      <nav class="dock-segments nova-glyph-dock">
+        <button
+          v-for="tab in tabs"
+          :key="tab.key"
+          @click="tasksStore.setTab(tab.key)"
+          class="segment-pill nova-glyph-tile"
+          :class="{ active: tasksStore.currentTab === tab.key }"
+          :data-active="tasksStore.currentTab === tab.key"
+          :aria-label="tab.label"
+        >
+          <component :is="tab.icon" :size="16" class="seg-icon" />
+          <span
+            v-if="tab.key === 'ai' && tasksStore.aiSuggestedTasks.length > 0"
+            class="seg-counter"
+          >
+            {{ tasksStore.aiSuggestedTasks.length }}
+          </span>
+          <!-- Zuari Aether Anchor Tooltip -->
+          <span class="nova-glyph-tooltip">{{ tab.label }}</span>
+        </button>
+      </nav>
+
+      <div class="dock-right">
+        <EveningAuditModal />
+        <button class="cmd-trigger-btn" @click="triggerCommandPalette" title="Search or press Ctrl+K">
+          <Search :size="13" class="cmd-search-icon" />
+          <kbd>Ctrl+K</kbd>
+        </button>
+      </div>
+    </header>
+
+    <!-- ✦ BENTO GRID ARCHITECTURE (DASHBOARD) ✦ -->
+    <main v-if="tasksStore.currentTab === 'dashboard'" class="bento-grid">
+      <!-- 1. AI Strategic Perspective & Hunter Stats -->
+      <HunterDirectiveCard />
+
+      <!-- 2. Velocity Index & Biometric Strip -->
+      <VelocityCard />
+
+      <!-- 3. Execution Queue Matrix -->
+      <ExecutionQueueCard ref="executionQueueRef" />
+
+      <!-- 4. Vision Directives (Goals) -->
+      <VisionDirectivesCard />
+
+      <!-- 5. Autonomous Predictions (AI suggestions) -->
+      <AiSuggestionsCard />
+    </main>
+
+    <!-- ✦ DEDICATED FULL VIEWS (Clean Bento Panels) ✦ -->
+    <main v-else class="bento-full-canvas">
+      <!-- Dedicated Tasks Matrix View -->
+      <TasksView v-if="tasksStore.currentTab === 'tasks'" />
+
+      <!-- Vision Architect Horizons -->
+      <GoalsView v-else-if="tasksStore.currentTab === 'goals'" />
+
+      <!-- Daily Activity Ledger -->
+      <ActivityView v-else-if="tasksStore.currentTab === 'activity'" />
+
+      <!-- Circadian Habits Engine -->
+      <HabitsView v-else-if="tasksStore.currentTab === 'habits'" />
+
+      <!-- Circadian Timetable -->
+      <TimetableView v-else-if="tasksStore.currentTab === 'timetable'" />
+
+      <!-- Notes Scratchpad -->
+      <NotesView v-else-if="tasksStore.currentTab === 'notes'" />
+
+      <!-- Telemetry Vault -->
+      <VaultView v-else-if="tasksStore.currentTab === 'database'" />
+    </main>
+
+    <!-- Floating Undo Notification Toast -->
+    <Transition name="toast-slide">
+      <div v-if="tasksStore.undoToastMessage" class="undo-floating-toast">
+        <span class="toast-text">{{ tasksStore.undoToastMessage }}</span>
+        <button @click="tasksStore.undoLastDelete()" class="btn-toast-undo">
+          <span>Undo</span>
+          <kbd>Ctrl+Z</kbd>
+        </button>
+      </div>
+    </Transition>
+
+    <!-- Global Command Palette Modal -->
+    <CommandPalette />
   </div>
 </template>
+
+<style lang="scss" scoped>
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.bento-universe {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  animation: fadeIn 0.35s ease-out;
+}
+
+// ✦ APEX FLOATING DOCK ✦
+.apex-dock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1.15rem;
+  background: rgba(18, 18, 22, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: $radius-pill;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  position: sticky;
+  top: 1rem;
+  z-index: 100;
+
+  .dock-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ff7a45, #ff5722);
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(255, 87, 34, 0.5);
+    }
+
+    .brand-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      .brand-name {
+        font-family: $font-mono;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        color: #ffffff;
+      }
+
+      .brand-badge {
+        font-family: $font-mono;
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        padding: 2px 5px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: $radius-xs;
+        color: $color-text-muted;
+      }
+    }
+  }
+
+  .dock-segments {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 3px;
+    border-radius: $radius-pill;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    gap: 3px;
+
+    .segment-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.38rem 0.85rem;
+      border-radius: $radius-pill;
+      border: none;
+      background: transparent;
+      color: $color-text-muted;
+      font-size: 11.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+      .seg-icon {
+        opacity: 0.7;
+        transition: transform 0.2s ease;
+      }
+
+      &:hover {
+        color: #ffffff;
+        .seg-icon {
+          transform: translateY(-1px);
+          opacity: 1;
+        }
+      }
+
+      &.active {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+
+        .seg-icon {
+          color: $color-ember;
+          opacity: 1;
+        }
+      }
+
+      .seg-counter {
+        font-family: $font-mono;
+        font-size: 9px;
+        padding: 1px 5px;
+        border-radius: $radius-pill;
+        background: $color-ember;
+        color: #ffffff;
+        font-weight: 700;
+      }
+    }
+  }
+
+  .dock-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .cmd-trigger-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0.35rem 0.65rem;
+      border-radius: $radius-pill;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: $color-text-muted;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      kbd {
+        font-family: $font-mono;
+        font-size: 9px;
+        padding: 1px 5px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.08);
+        color: $color-text-dim;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 87, 34, 0.3);
+        color: #ffffff;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.5rem 0.75rem;
+
+    .brand-info {
+      display: none;
+    }
+
+    .dock-segments .segment-pill {
+      padding: 0.35rem 0.55rem;
+      .seg-text {
+        display: none;
+      }
+    }
+
+    .cmd-trigger-btn kbd {
+      display: none;
+    }
+  }
+}
+
+// ✦ BENTO GRID ARCHITECTURE (DASHBOARD) ✦
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.15rem;
+  width: 100%;
+}
+
+// ✦ DEDICATED FULL VIEWS CONTAINER ✦
+.bento-full-canvas {
+  width: 100%;
+  animation: fadeIn 0.3s ease-out;
+}
+
+// ✦ Floating Undo Toast ✦
+.undo-floating-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(24, 24, 27, 0.95);
+  border: 1px solid rgba(255, 87, 34, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 87, 34, 0.15);
+  padding: 0.65rem 1.1rem;
+  border-radius: $radius-pill;
+  z-index: 1000;
+  backdrop-filter: blur(12px);
+
+  .toast-text {
+    font-size: 12px;
+    color: #ffffff;
+    font-weight: 500;
+  }
+
+  .btn-toast-undo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 87, 34, 0.2);
+    border: 1px solid rgba(255, 87, 34, 0.4);
+    border-radius: $radius-pill;
+    color: $color-ember;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    kbd {
+      font-family: $font-mono;
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    &:hover {
+      background: rgba(255, 87, 34, 0.35);
+      color: #ffffff;
+    }
+  }
+}
+
+.toast-slide-enter-active,
+.toast-slide-leave-active {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast-slide-enter-from,
+.toast-slide-leave-to {
+  opacity: 0;
+  transform: translateY(16px) scale(0.95);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>

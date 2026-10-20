@@ -1,61 +1,73 @@
-# MINDSET
+<p align="center">
+  <img src="https://img.shields.io/badge/DANGER%20LABS-ENTERPRISE-000000?style=for-the-badge&logo=target&logoColor=FF3E3E" alt="Danger Labs" />
+</p>
 
-MINDSET is a productivity dashboard prototype built with Vue 3, Vite, Pinia, and Tailwind-inspired UI utilities. It focuses on maintaining a calm dark workspace for tracking goals, tasks, and AI motivation insights in a compact dashboard layout.
+<h1 align="center">MINDSET MACHINE</h1>
 
-## What this project includes
+<p align="center">
+  <strong>Minimalist productivity cockpit and daily executive routine tracker.</strong><br />
+  Designed and engineered by <strong>Danger Labs</strong>.
+</p>
 
-- Vue 3 application scaffolded with Vite
-- Pinia store for managing tasks, goals, and AI state
-- Dark dashboard UI with a collapsible sidebar
-- Goals list, task groups, and AI motivation panel
-- Project-ready scripts for development, build, lint, and type checking
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Web%20%7C%20Android-0A84FF?style=flat-square&logo=android&logoColor=white" alt="Platform" />
+  <img src="https://img.shields.io/badge/Stack-Vue%203%20%7C%20TypeScript-42B883?style=flat-square&logo=vuedotjs&logoColor=white" alt="Stack" />
+  <img src="https://img.shields.io/badge/Design-Zuari%20Aether-6C5CE7?style=flat-square" alt="Zuari Aether" />
+  <img src="https://img.shields.io/badge/License-MIT-gray?style=flat-square" alt="License" />
+</p>
 
-## Recommended environment
+---
 
-- Node.js `^20.19.0 || >=22.12.0`
-- [VS Code](https://code.visualstudio.com/) with [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
-- Optional: Vue.js devtools for browser debugging
+## What It Does
 
-## Project setup
+**Mindset Machine** is a clean, local-first daily executive dashboard designed by **Danger Labs** to keep track of your focus, habits, schedule, and biological readiness in one place without bloat.
 
-```sh
+- **Tasks Matrix**: Prioritize tasks by cognitive energy (Deep, Flow, Quick) with critical flame tags and Rule-of-3 focus.
+- **Circadian Habits**: Morning, Afternoon, and Evening non-negotiable protocols with Loop-style consistency scoring.
+- **Focus Timetable**: Chronological time-blocking with an active countdown horizon for your current focus block.
+- **Activity Ledger**: Chronological event ledger logging actions, habits, focus minutes, and 14-day consistency heatmaps.
+- **Vision Architect**: High-level horizons split into Monumental North Stars, Quarterly Keystones, and Monthly milestones.
+- **Wearables & Biometrics**: Pairs with Bluetooth Low Energy (BLE) smartwatches or Health Connect for live heart rate, recovery, and step tracking.
+- **AI Directives**: Dual-engine intelligence (local Ollama or cloud) for daily perspective and next-move synthesis.
+- **Data Sovereignty**: 100% offline-ready, stored on-device with one-click JSON and Markdown backup exports.
+
+---
+
+## Current Known Issues
+
+- **Android CLI Build**: Compiling the standalone APK directly via terminal requires `JAVA_HOME` configured on your machine. You can open and build the project in Android Studio instead (`npm run android:open`).
+- **Bluetooth in Browsers**: Web Bluetooth requires HTTPS or `localhost` with a user interaction trigger to start scanning.
+- **Health Connect**: Full Android Health Connect synchronization requires signed production credentials on Android 14+.
+
+---
+
+## Quick Start
+
+```bash
+# 1. Install dependencies
 npm install
-```
 
-## Development
-
-```sh
+# 2. Launch development server
 npm run dev
+
+# 3. Verify code quality (TypeScript + Lint + Tests)
+npm run verify
+
+# 4. Sync production assets to native Android
+npm run build && npx cap sync android
 ```
 
-Open `http://localhost:5173` in your browser after the Vite server starts.
+---
 
-## Build for production
+## Contributing
 
-```sh
-npm run build
-```
+1. Fork the repository and create your topic branch (`git checkout -b feature/update`).
+2. Adhere to the zero-monolith architecture (keep components modular and under 400 lines).
+3. Ensure all tests and lints pass (`npm run verify`).
+4. Submit a Pull Request.
 
-## Preview production build
+---
 
-```sh
-npm run preview
-```
+## Credits
 
-## Type checking
-
-```sh
-npm run type-check
-```
-
-## Lint and format
-
-```sh
-npm run lint
-npm run format
-```
-
-## Notes
-
-- The app is under active development; features and UI behavior are still being refined.
-- See `TODO.md` for the current work list and next tasks.
+Designed, architected, and maintained by **Danger Labs**. Licensed under the MIT License.

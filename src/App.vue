@@ -3,17 +3,23 @@ import DashboardView from '@/components/DashboardView.vue'
 </script>
 
 <template>
-  <!-- This wrapper centers your premium layout on a deep dark backdrop -->
-  <main class="min-h-screen bg-zinc-950 text-zinc-100 flex items-start pt-12 justify-center w-full">
+  <main class="app-root">
     <DashboardView />
   </main>
 </template>
 
-<style>
-/* Reset any weird default margins Vue added */
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #09090b;
+<style lang="scss">
+@use '@/styles/variables' as *;
+@use '@/styles/mixins' as *;
+
+.app-root {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+  background-color: $color-bg-base;
 }
 </style>

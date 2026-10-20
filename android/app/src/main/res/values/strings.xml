@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Mindset Machine</string>
+    <string name="title_activity_main">Mindset Machine</string>
+    <string name="package_name">com.mindset.app</string>
+    <string name="custom_url_scheme">com.mindset.app</string>
+</resources>
