@@ -1,6 +1,7 @@
 @use './variables' as *;
 @use './mixins' as *;
 @use './zuari/aether.css';
+@use '../design-system/tokens/design-tokens.css';
 
 :root {
   color-scheme: dark;

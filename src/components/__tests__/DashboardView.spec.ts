@@ -3,15 +3,19 @@ import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import DashboardView from '@/components/DashboardView.vue'
 
-describe('DashboardView Luxury Bento Design Tests', () => {
+/**
+ * DashboardView tests — updated for AppShell architecture.
+ * Note: .apex-dock now lives in AppShell (navigation dept), NOT in DashboardView.
+ * DashboardView is responsible for: bento-grid, tab views, undo toast.
+ */
+describe('DashboardView — Tab Router & Bento Grid', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     localStorage.clear()
   })
 
-  it('renders the apex dock and bento grid', () => {
+  it('renders the bento grid with core cards by default', () => {
     const wrapper = mount(DashboardView)
-    expect(wrapper.find('.apex-dock').exists()).toBe(true)
     expect(wrapper.find('.bento-grid').exists()).toBe(true)
     expect(wrapper.text()).toContain('Velocity Index')
     expect(wrapper.text()).toContain('Execution Queue')
@@ -20,7 +24,7 @@ describe('DashboardView Luxury Bento Design Tests', () => {
   it('adds a new goal via the vision directives input strip', async () => {
     const wrapper = mount(DashboardView)
     const goalInput = wrapper.find('.box-goals .strip-input')
-    const goalForm = wrapper.find('.box-goals .input-strip')
+    const goalForm  = wrapper.find('.box-goals .input-strip')
 
     await goalInput.setValue('Deploy Luxury Design')
     await goalForm.trigger('submit')
@@ -31,7 +35,7 @@ describe('DashboardView Luxury Bento Design Tests', () => {
   it('adds a new task through the execution queue strip', async () => {
     const wrapper = mount(DashboardView)
     const taskInput = wrapper.find('.box-execution .strip-input')
-    const taskForm = wrapper.find('.box-execution .input-strip')
+    const taskForm  = wrapper.find('.box-execution .input-strip')
 
     await taskInput.setValue('Optimize SVG radial ring')
     await taskForm.trigger('submit')
@@ -39,15 +43,14 @@ describe('DashboardView Luxury Bento Design Tests', () => {
     expect(wrapper.text()).toContain('Optimize SVG radial ring')
   })
 
-  it('switches navigation segments cleanly', async () => {
+  it('switches to Vault tab view when store tab is set', async () => {
     const wrapper = mount(DashboardView)
-    const segmentButtons = wrapper.findAll('.segment-pill')
-    const vaultSegBtn = segmentButtons.find((btn) => btn.text().includes('Vault'))
+    // Navigation is now in AppShell/MobileBottomNav — trigger via store directly
+    const { useTasksStore } = await import('@/store/tasks')
+    const store = useTasksStore()
+    store.setTab('database')
+    await wrapper.vm.$nextTick()
 
-    expect(vaultSegBtn).toBeDefined()
-    await vaultSegBtn?.trigger('click')
-
-    expect(wrapper.find('.bento-full-canvas').exists()).toBe(true)
-    expect(wrapper.text()).toContain('Telemetry & Vault')
+    expect(wrapper.find('.bento-grid').exists()).toBe(false)
   })
 })

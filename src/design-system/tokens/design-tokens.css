@@ -1,0 +1,76 @@
+/* =============================================================================
+   MINDSET MACHINE — Design Token Layer (CSS Custom Properties)
+   Single source of truth for ALL visual values.
+   Import this FIRST in main.scss via @use or @import.
+   ============================================================================= */
+
+:root {
+  /* ── Color: Backgrounds ─────────────────────────────────────────────────── */
+  --mm-bg-base:        oklch(14% 0.015 260);       /* #06070a – app canvas */
+  --mm-bg-surface:     oklch(17% 0.018 260 / 0.9); /* #0b0d14 – card bg    */
+  --mm-bg-elevated:    oklch(20% 0.022 260);        /* #10131d – raised card */
+  --mm-bg-hover:       oklch(23% 0.026 260);        /* #15192a – hover state */
+  --mm-bg-overlay:     oklch(0% 0 0 / 0.65);        /* modal backdrop        */
+
+  /* ── Color: Borders ─────────────────────────────────────────────────────── */
+  --mm-border:         oklch(100% 0 0 / 0.08);      /* default border        */
+  --mm-border-hover:   oklch(100% 0 0 / 0.14);      /* hovered border        */
+  --mm-border-focus:   oklch(65% 0.22 32 / 0.5);    /* focused input border  */
+  --mm-border-subtle:  oklch(100% 0 0 / 0.04);      /* very subtle divider   */
+
+  /* ── Color: Accent Palette ──────────────────────────────────────────────── */
+  --mm-accent:         oklch(75% 0.18 190);          /* teal – primary action */
+  --mm-accent-glow:    oklch(75% 0.18 190 / 0.25);  /* teal glow             */
+  --mm-action:         oklch(65% 0.22 32);           /* #ff5722 – orange CTA  */
+  --mm-action-glow:    oklch(65% 0.22 32 / 0.25);   /* orange glow           */
+  --mm-danger:         oklch(55% 0.22 25);           /* #ef4444 – errors      */
+  --mm-success:        oklch(65% 0.18 150);          /* #10b981 – green       */
+  --mm-warn:           oklch(78% 0.16 85);           /* #f59e0b – amber       */
+
+  /* ── Color: Text ────────────────────────────────────────────────────────── */
+  --mm-text-primary:   oklch(95% 0.005 260);        /* #f0f2f8 – body text   */
+  --mm-text-secondary: oklch(70% 0.01  260);        /* #aab0c0 – secondary   */
+  --mm-text-dim:       oklch(50% 0.01  260);        /* #686e80 – meta/label  */
+  --mm-text-disabled:  oklch(35% 0.008 260);        /* #404450 – disabled    */
+
+  /* ── Radius ──────────────────────────────────────────────────────────────── */
+  --mm-r-xs:           4px;
+  --mm-r-sm:           6px;
+  --mm-r-md:           10px;
+  --mm-r-card:         14px;   /* squircle – main cards */
+  --mm-r-lg:           20px;
+  --mm-r-xl:           28px;
+  --mm-r-pill:         9999px;
+
+  /* ── Spacing (4px base grid) ─────────────────────────────────────────────── */
+  --mm-sp-1: 4px;   --mm-sp-2: 8px;   --mm-sp-3: 12px;  --mm-sp-4: 16px;
+  --mm-sp-5: 20px;  --mm-sp-6: 24px;  --mm-sp-8: 32px;  --mm-sp-12: 48px;
+
+  /* ── Typography ──────────────────────────────────────────────────────────── */
+  --mm-font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --mm-font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* ── Motion ──────────────────────────────────────────────────────────────── */
+  --mm-dur-micro:    150ms;
+  --mm-dur-std:      200ms;
+  --mm-dur-page:     280ms;
+  --mm-ease-std:     cubic-bezier(0.4, 0, 0.2, 1);
+  --mm-ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Layout ──────────────────────────────────────────────────────────────── */
+  --mm-bottom-nav-h:    56px;
+  --mm-top-dock-h:      52px;
+  --mm-nav-rail-w:      72px;
+  --mm-content-max-w:   1360px;
+  --mm-safe-b:          env(safe-area-inset-bottom, 0px);
+  --mm-safe-t:          env(safe-area-inset-top, 0px);
+}
+
+/* ── Reduced Motion Overrides ─────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --mm-dur-micro: 0ms;
+    --mm-dur-std:   0ms;
+    --mm-dur-page:  0ms;
+  }
+}

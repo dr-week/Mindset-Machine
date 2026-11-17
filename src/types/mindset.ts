@@ -60,7 +60,8 @@ export interface QuickNote {
 export interface TimeBlock {
   id: string
   title: string
-  category: 'deep' | 'vitality' | 'admin' | 'rest' | 'ritual'
+  /** deep-work kept as alias for 'deep' for backward compatibility */
+  category: 'deep' | 'deep-work' | 'vitality' | 'admin' | 'rest' | 'ritual'
   startTime: string // '07:00'
   endTime: string   // '08:30'
   completed?: boolean

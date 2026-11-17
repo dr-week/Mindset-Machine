@@ -3,6 +3,9 @@ import { ref } from 'vue'
 import { Upload, FileText, Download } from 'lucide-vue-next'
 import EveningAuditModal from '@/components/EveningAuditModal.vue'
 import { useTasksStore } from '@/store/tasks'
+import { downloadJsonBackup, downloadMarkdownVault } from './vaultExportHelpers'
+import VaultKpiGrid from './VaultKpiGrid.vue'
+import VaultDatabaseStatus from './VaultDatabaseStatus.vue'
 
 const tasksStore = useTasksStore()
 const fileInputRef = ref<HTMLInputElement | null>(null)
@@ -33,7 +36,7 @@ function handleFileImport(e: Event): void {
 }
 
 function exportToJson(): void {
-  const data = {
+  downloadJsonBackup({
     exportedAt: new Date().toISOString(),
     goals: tasksStore.goals,
     tasks: tasksStore.tasks,
@@ -41,73 +44,35 @@ function exportToJson(): void {
     reviews: tasksStore.reviews,
     aiSuggestedTasks: tasksStore.aiSuggestedTasks,
     aiMotivation: tasksStore.aiMotivation,
-  }
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `mindset-backup-${new Date().toISOString().slice(0, 10)}.json`
-  a.click()
-  URL.revokeObjectURL(url)
+  })
 }
 
 function exportToMarkdown(): void {
-  let md = `# MINDSET — Productivity Vault Export\n*Exported on ${new Date().toLocaleString()}*\n\n`
-  md += `## 🎯 Vision Directives (${tasksStore.goals.length})\n`
-  tasksStore.goals.forEach((g) => {
-    md += `- [${g.completed ? 'x' : ' '}] ${g.text}\n`
-  })
-  md += `\n## ⚡ Tasks Matrix (${tasksStore.tasks.length})\n`
-  tasksStore.tasks.forEach((t) => {
-    md += `- [${t.completed ? 'x' : ' '}] **[${t.priority.toUpperCase()}]** ${t.title} *(Energy: ${t.energy || 'normal'})*\n`
-  })
-  if (tasksStore.timetable.length > 0) {
-    md += `\n## ⏱️ Circadian Timetable (${tasksStore.timetable.length})\n`
-    tasksStore.timetable.forEach((b) => {
-      md += `- [${b.completed ? 'x' : ' '}] ${b.startTime} - ${b.endTime} **[${b.category.toUpperCase()}]** ${b.title}\n`
-    })
-  }
-  if (tasksStore.reviews.length > 0) {
-    md += `\n## 🌙 Evening Audits & Wins (${tasksStore.reviews.length})\n`
-    tasksStore.reviews.forEach((r) => {
-      md += `### ${r.date} (Velocity: ${r.velocityRate}%)\n`
-      md += `- **Win:** ${r.winNote}\n`
-      md += `- **Next Priority:** ${r.tomorrowPriority}\n\n`
-    })
-  }
-
-  const blob = new Blob([md], { type: 'text/markdown' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `mindset-vault-${new Date().toISOString().slice(0, 10)}.md`
-  a.click()
-  URL.revokeObjectURL(url)
+  downloadMarkdownVault(
+    tasksStore.goals,
+    tasksStore.tasks,
+    tasksStore.timetable,
+    tasksStore.reviews
+  )
 }
 </script>
 
 <template>
   <div class="full-bento-card vault-canvas zuari-card">
     <div class="full-top">
-      <h2>Telemetry & Vault</h2>
+      <h2>Telemetry & Sovereign Vault</h2>
       <div class="export-actions-row">
         <EveningAuditModal />
-        <input
-          ref="fileInputRef"
-          type="file"
-          accept=".json"
-          style="display: none;"
-          @change="handleFileImport"
-        />
-        <button @click="triggerFileSelect" class="btn-vault-export" title="Restore entire workspace from JSON">
+        <input ref="fileInputRef" type="file" accept=".json" style="display: none;" @change="handleFileImport" />
+        <button @click="triggerFileSelect" class="btn-vault-export" title="Restore workspace" type="button">
           <Upload :size="13" />
-          <span>Restore Backup</span>
+          <span>Restore</span>
         </button>
-        <button @click="exportToMarkdown" class="btn-vault-export" title="Export entire workspace to Markdown">
+        <button @click="exportToMarkdown" class="btn-vault-export" title="Export Markdown" type="button">
           <FileText :size="13" />
-          <span>Export Markdown</span>
+          <span>Export MD</span>
         </button>
-        <button @click="exportToJson" class="btn-vault-export primary" title="Export backup JSON">
+        <button @click="exportToJson" class="btn-vault-export primary" title="Backup JSON" type="button">
           <Download :size="13" />
           <span>Backup JSON</span>
         </button>
@@ -118,158 +83,66 @@ function exportToMarkdown(): void {
       <span>{{ importMessage }}</span>
     </div>
 
-    <div class="vault-kpis">
-      <div class="kpi-card">
-        <span class="val">{{ tasksStore.tasks.length }}</span>
-        <span class="lbl">TASKS</span>
-      </div>
-      <div class="kpi-card">
-        <span class="val">{{ tasksStore.goals.length }}</span>
-        <span class="lbl">GOALS</span>
-      </div>
-      <div class="kpi-card">
-        <span class="val">{{ tasksStore.timetable.length }}</span>
-        <span class="lbl">TIME BLOCKS</span>
-      </div>
-      <div class="kpi-card">
-        <span class="val">{{ tasksStore.aiSuggestedTasks.length }}</span>
-        <span class="lbl">AI ROADMAPS</span>
-      </div>
-    </div>
+    <VaultKpiGrid
+      :tasks-count="tasksStore.tasks.length"
+      :goals-count="tasksStore.goals.length"
+      :timetable-count="tasksStore.timetable.length"
+      :ai-roadmaps-count="tasksStore.aiSuggestedTasks.length"
+    />
 
-    <pre class="clean-json-box">{{
-      JSON.stringify(
-        {
-          goals: tasksStore.goals,
-          tasks: tasksStore.tasks,
-          timetable: tasksStore.timetable,
-          reviews: tasksStore.reviews,
-          suggestions: tasksStore.aiSuggestedTasks,
-        },
-        null,
-        2,
-      )
-    }}</pre>
+    <VaultDatabaseStatus
+      :total-entities="tasksStore.tasks.length + tasksStore.goals.length + tasksStore.habits.length + tasksStore.notes.length"
+      :tasks-count="tasksStore.tasks.length"
+      :goals-count="tasksStore.goals.length"
+      :habits-count="tasksStore.habits.length"
+      :notes-count="tasksStore.notes.length"
+    />
   </div>
 </template>
 
 <style lang="scss" scoped>
 @use '@/styles/variables' as *;
-@use '@/styles/mixins' as *;
 
 .vault-canvas {
-  .export-actions-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-
-    .btn-vault-export {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 0.4rem 0.75rem;
-      border-radius: $radius-sm;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: $color-text-muted;
-      font-size: 11px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s ease;
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.08);
-        color: #ffffff;
-      }
-
-      &.primary {
-        background: rgba(255, 87, 34, 0.15);
-        border-color: rgba(255, 87, 34, 0.4);
-        color: $color-ember;
-
-        &:hover {
-          background: rgba(255, 87, 34, 0.25);
-        }
-      }
-    }
-  }
-
-  .import-alert-banner {
-    padding: 0.6rem 0.85rem;
-    margin-bottom: 1rem;
-    background: rgba(16, 185, 129, 0.15);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    border-radius: $radius-sm;
-    color: #34d399;
-    font-size: 12px;
-  }
-
-  .vault-kpis {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 0.75rem;
-    margin-bottom: 1.25rem;
-
-    .kpi-card {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      padding: 0.85rem;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: $radius-md;
-
-      .val {
-        font-family: $font-mono;
-        font-size: 18px;
-        font-weight: 800;
-        color: #ffffff;
-      }
-
-      .lbl {
-        font-family: $font-mono;
-        font-size: 8.5px;
-        letter-spacing: 0.08em;
-        color: $color-text-dim;
-      }
-    }
-  }
-
-  .clean-json-box {
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: $radius-md;
-    padding: 1.15rem;
-    font-family: $font-mono;
-    font-size: 11px;
-    color: $color-text-muted;
-    max-height: 400px;
-    overflow-y: auto;
-    @include custom-scroll;
-  }
+  padding: 1.25rem 1.5rem;
+  background: rgba(18, 18, 22, 0.95);
+  border-radius: $radius-lg;
+  @media (max-width: 680px) { padding: 1rem 0.85rem; }
 }
 
-.full-bento-card {
-  background: rgba(18, 18, 22, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: $radius-lg;
-  padding: 1.5rem;
+.full-top {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 1.25rem;
+  h2 { font-size: 15px; font-weight: 700; color: #fff; margin: 0; }
+  .export-actions-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+}
 
-  .full-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
+.btn-vault-export {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: $radius-xs;
+  color: #fff;
+  font-size: 11px;
+  padding: 6px 11px;
+  cursor: pointer;
+  &:hover { background: rgba(255, 255, 255, 0.06); }
+  &.primary { background: #ff5722; border-color: #ff5722; font-weight: 700; }
+}
 
-    h2 {
-      font-size: 17px;
-      font-weight: 700;
-      color: #ffffff;
-      margin: 0;
-    }
-  }
+.import-alert-banner {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: $radius-xs;
+  padding: 8px 12px;
+  color: #34d399;
+  font-size: 12px;
+  margin-bottom: 16px;
 }
 </style>
