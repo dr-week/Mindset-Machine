@@ -34,13 +34,16 @@ All data remains strictly on your device with sub-millisecond local reactivity a
 
 ---
 
-## Downloads
+## Downloads & Official Release
 
-| Package | Format | Size | Details & Installation |
+> 🚀 **Official Production Release v1.0.0**: [View Release Assets & Checksums on GitHub](https://github.com/dr-week/Mindset-Machine/releases/tag/v1.0.0)
+
+| Package | Format | Size | Download & Details |
 | :--- | :--- | :--- | :--- |
-| **Android Release APK** | `.apk` (v1.0.0) | **3.2 MB** | [Download APK](public/download/mindset-machine-release.apk) &bull; SHA-256: `779ae1cd...4b6f7cf15a` |
+| **Android Release APK** | `.apk` (v1.0.0) | **3.2 MB** | [Download APK](public/download/mindset-machine-release.apk) &bull; [GitHub Release](https://github.com/dr-week/Mindset-Machine/releases/tag/v1.0.0) |
 | **Browser Extension** | Manifest V3 `.zip` | **5.5 KB** | [Download Extension](public/download/mindset-machine-extension.zip) &bull; Chrome / Edge / Brave / Firefox |
 | **Showcase Landing Page** | Standalone HTML | — | [Open Showcase Webpage](public/download.html) |
+| **Release Checksum** | SHA-256 | — | `779ae1cd9561d13dd8bd1c5cbfbecb52309c34de4c65e8b0a4bec04b6f7cf15a` |
 
 ---
 

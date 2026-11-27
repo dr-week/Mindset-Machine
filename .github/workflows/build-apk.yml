@@ -6,6 +6,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   build-apk:
     runs-on: ubuntu-latest
@@ -18,9 +21,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
 
       - name: Setup Node.js 22
         uses: actions/setup-node@v4
@@ -39,10 +39,27 @@ jobs:
       - name: Run APK Release Packager
         run: python3 scripts/android/release-apk.py
 
-      - name: Upload APK Release Artifact
+      - name: Package Browser Extension
+        run: python3 scripts/build-extension.py
+
+      - name: Upload Artifacts to Workflow Run
         uses: actions/upload-artifact@v4
         with:
-          name: mindset-machine-release-apk
+          name: mindset-machine-release-bundle
           path: |
             public/download/mindset-machine-release.apk
+            public/download/mindset-machine-extension.zip
             public/download/release-metadata.json
+            public/download/extension-metadata.json
+
+      - name: Attach Assets to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            public/download/mindset-machine-release.apk
+            public/download/mindset-machine-extension.zip
+            public/download/release-metadata.json
+            public/download/extension-metadata.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
