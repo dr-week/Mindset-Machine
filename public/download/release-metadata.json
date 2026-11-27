@@ -1,0 +1,13 @@
+{
+  "appName": "Mindset Machine",
+  "packageName": "com.mindset.machine",
+  "version": "1.0.0",
+  "releaseDate": "2026-11-27T16:40:42.969326+00:00",
+  "apkFileName": "mindset-machine-release.apk",
+  "sizeBytes": 3356425,
+  "sizeMB": 3.2,
+  "sha256": "779ae1cd9561d13dd8bd1c5cbfbecb52309c34de4c65e8b0a4bec04b6f7cf15a",
+  "architecture": "universal-arm64-v8a-x86_64",
+  "minSdk": 24,
+  "targetSdk": 34
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mindset Machine Companion</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <header class="popup-header">
+      <div class="brand">
+        <div class="brand-glyph"></div>
+        <div>
+          <span class="brand-title">MINDSET MACHINE</span>
+          <span class="brand-sub">FOCUS COMPANION</span>
+        </div>
+      </div>
+      <a href="http://localhost:5173" target="_blank" class="btn-launch" title="Open Full Cockpit">Launch ↗</a>
+    </header>
+
+    <div class="readiness-hud">
+      <div class="hud-item">
+        <span class="hud-label">READINESS</span>
+        <span class="hud-val">88%</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">SYNC</span>
+        <span class="hud-val hud-green">DRIVE LWW</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">STREAK</span>
+        <span class="hud-val hud-orange">14 DAYS</span>
+      </div>
+    </div>
+
+    <form id="add-task-form" class="task-input-bar">
+      <input type="text" id="task-title" placeholder="+ Quick capture task / micro-step..." required />
+      <button type="submit" id="btn-add">Add</button>
+    </form>
+
+    <div class="queue-section">
+      <div class="queue-header">
+        <span>ACTIVE FOCUS QUEUE</span>
+        <span id="task-count" class="counter">0</span>
+      </div>
+      <div id="task-list" class="task-list">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+    <footer class="popup-footer">
+      <span>Zuari 5-Plane · Local-First Hybrid Store</span>
+    </footer>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

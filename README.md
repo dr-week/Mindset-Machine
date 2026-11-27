@@ -10,18 +10,17 @@
   <p>
     <a href="https://vuejs.org/"><img src="https://img.shields.io/badge/Vue_3-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D" alt="Vue 3" /></a>
     <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
-    <a href="https://capacitorjs.com/"><img src="https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android Native" /></a>
-    <a href="https://pinia.vuejs.org/"><img src="https://img.shields.io/badge/Pinia-FFE873?style=for-the-badge&logo=pinia&logoColor=35495E" alt="Pinia" /></a>
-    <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" /></a>
+    <a href="public/download/mindset-machine-release.apk"><img src="https://img.shields.io/badge/Android_APK-v1.0.0-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android APK v1.0.0" /></a>
+    <a href="public/download/mindset-machine-extension.zip"><img src="https://img.shields.io/badge/Extension-Manifest_V3-ff5722?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Browser Extension" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-black?style=for-the-badge" alt="MIT License" /></a>
   </p>
 
   <p>
+    <a href="public/download.html"><strong>Showcase &amp; Downloads Webpage</strong></a> &bull;
+    <a href="#micro-modular-departments">Modular Departments</a> &bull;
+    <a href="#downloads">Downloads</a> &bull;
     <a href="#core-architecture">Architecture</a> &bull;
-    <a href="#features">Features</a> &bull;
-    <a href="#quick-start">Quick Start</a> &bull;
-    <a href="#known-issues">Known Issues</a> &bull;
-    <a href="#contributing">Contributing</a>
+    <a href="#quick-start">Quick Start</a>
   </p>
 </div>
 
@@ -32,6 +31,30 @@
 **Mindset Machine** is a precision personal operating cockpit engineered for uninterrupted focus and biological alignment. It integrates daily task prioritization, circadian habit loops, calendar focus blocks, and real-time wearable biometrics into an artistic, low-noise dashboard.
 
 All data remains strictly on your device with sub-millisecond local reactivity and cross-platform native Android sync.
+
+---
+
+## Downloads
+
+| Package | Format | Size | Details & Installation |
+| :--- | :--- | :--- | :--- |
+| **Android Release APK** | `.apk` (v1.0.0) | **3.2 MB** | [Download APK](public/download/mindset-machine-release.apk) &bull; SHA-256: `779ae1cd...4b6f7cf15a` |
+| **Browser Extension** | Manifest V3 `.zip` | **5.5 KB** | [Download Extension](public/download/mindset-machine-extension.zip) &bull; Chrome / Edge / Brave / Firefox |
+| **Showcase Landing Page** | Standalone HTML | — | [Open Showcase Webpage](public/download.html) |
+
+---
+
+## Micro-Modular Departments
+
+The application is engineered into 8 decoupled domain departments under `src/departments/`:
+- **Cockpit (`CP`)**: Executive HUD, Hunter Mode, and today’s execution queue (Surface Plane).
+- **Focus Stream (`FS`)**: Deep work focus stream, micro-tasks and sub-step checklist (Surface Plane).
+- **Circadian Timetable (`TT`)**: Time block allocation and circadian schedule (Dock Plane).
+- **Habit Engine (`HB`)**: Streak consistency, heatmaps, monk-mode habits (Dock Plane).
+- **Vision Horizons (`VH`)**: Macro goals, OKRs, and milestone linkages (Dock Plane).
+- **Gemini AI Architect (`AI`)**: Gemini 2.5 Flash goal decomposition and micro-step triage (Dock Plane).
+- **Activity & Biometrics (`BM`)**: Google Fit physical telemetry (Ambient Plane).
+- **Data Vault (`VT`)**: Local directory file sync and Google Drive cloud backup (Drawer Plane).
 
 ---
 
