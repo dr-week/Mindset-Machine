@@ -12,8 +12,9 @@ export const useUiStore = defineStore('ui', () => {
   // ── Navigation ──────────────────────────────────────────────────────────────
   const activeModal = ref<ModalId>(null)
 
-  // ── Bottom sheet (mobile overflow nav) ──────────────────────────────────────
+  // ── Bottom sheet (mobile overflow nav) & Zuari Drawer Plane ─────────────────
   const isNavSheetOpen = ref(false)
+  const isCloudDrawerOpen = ref(false)
 
   // ── Toast / Notification ────────────────────────────────────────────────────
   const toastMessage = ref('')
@@ -31,6 +32,10 @@ export const useUiStore = defineStore('ui', () => {
   function closeNavSheet() { isNavSheetOpen.value = false }
   function toggleNavSheet() { isNavSheetOpen.value = !isNavSheetOpen.value }
 
+  function openCloudDrawer() { isCloudDrawerOpen.value = true }
+  function closeCloudDrawer() { isCloudDrawerOpen.value = false }
+  function toggleCloudDrawer() { isCloudDrawerOpen.value = !isCloudDrawerOpen.value }
+
   function showToast(message: string, durationMs = 3000) {
     toastMessage.value = message
     toastVisible.value = true
@@ -44,8 +49,9 @@ export const useUiStore = defineStore('ui', () => {
   }
 
   return {
-    activeModal, isNavSheetOpen, toastMessage, toastVisible, hasActiveModal,
+    activeModal, isNavSheetOpen, isCloudDrawerOpen, toastMessage, toastVisible, hasActiveModal,
     openModal, closeModal, openNavSheet, closeNavSheet, toggleNavSheet,
+    openCloudDrawer, closeCloudDrawer, toggleCloudDrawer,
     showToast, hideToast,
   }
 })

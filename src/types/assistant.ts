@@ -32,3 +32,22 @@ export interface GoogleFitSyncResult {
   recoveryScore: number
   syncedAt: string
 }
+
+export interface GeminiMicroStep {
+  title: string
+  estimatedMinutes: number
+}
+
+export interface GeminiTaskBreakdown {
+  taskTitle: string
+  priority: 'low' | 'medium' | 'high'
+  energy: 'deep' | 'flow' | 'quick'
+  microTasks: GeminiMicroStep[]
+}
+
+export interface GeminiGoalBreakdown {
+  goalTitle: string
+  category: 'monumental' | 'quarterly' | 'monthly'
+  tasks: GeminiTaskBreakdown[]
+}
+

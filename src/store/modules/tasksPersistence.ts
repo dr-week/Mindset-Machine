@@ -2,6 +2,7 @@ import { watch, type Ref } from 'vue'
 import { saveStoredState } from '@/data/tasks'
 import { playSuccessChime } from '@/services/audioFeedback'
 import { triggerHaptic } from '@/services/haptics'
+import { storageManager } from '@/services/storage/storageManager'
 import type { Task, Goal, QuickNote, DayReview, TimeBlock, Habit, AiSuggestion, BiometricTelemetry } from '@/types/mindset'
 
 export function useTasksPersistence(
@@ -16,7 +17,7 @@ export function useTasksPersistence(
   biometrics: Ref<BiometricTelemetry>
 ) {
   watch(
-    [tasks, goals, notes, reviews, timetable, aiSuggestedTasks, aiMotivation, biometrics],
+    [tasks, goals, notes, reviews, timetable, habits, aiSuggestedTasks, aiMotivation, biometrics],
     () => {
       saveStoredState({
         tasks: tasks.value,
@@ -28,6 +29,12 @@ export function useTasksPersistence(
         aiSuggestedTasks: aiSuggestedTasks.value,
         aiMotivation: aiMotivation.value,
         biometrics: biometrics.value,
+      })
+      storageManager.queueDebouncedSync({
+        tasks: tasks.value,
+        goals: goals.value,
+        habits: habits.value,
+        mindsetLogs: [],
       })
     },
     { deep: true }

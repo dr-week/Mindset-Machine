@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { loadStoredState } from '@/data/tasks'
+import { googleAuthService } from '@/services/google/googleAuthService'
 import type {
   Task,
   Goal,
@@ -10,6 +11,8 @@ import type {
   Habit,
   QuickNote,
   DayReview,
+  GoogleUserProfile,
+  DriveSyncState,
 } from '@/types/mindset'
 
 export function useTasksState() {
@@ -32,6 +35,11 @@ export function useTasksState() {
       source: 'simulated',
     }
   )
+  const googleUser = ref<GoogleUserProfile | null>(googleAuthService.getUser())
+  const driveSync = ref<DriveSyncState>({
+    status: 'idle',
+  })
+
   const aiSuggestedTasks = ref<AiSuggestion[]>(storedState.aiSuggestedTasks)
   const aiMotivation = ref<string>(storedState.aiMotivation)
   const loadingAi = ref<boolean>(false)
@@ -54,6 +62,8 @@ export function useTasksState() {
     timetable,
     habits,
     biometrics,
+    googleUser,
+    driveSync,
     aiSuggestedTasks,
     aiMotivation,
     loadingAi,

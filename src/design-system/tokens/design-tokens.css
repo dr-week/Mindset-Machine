@@ -5,18 +5,25 @@
    ============================================================================= */
 
 :root {
-  /* ── Color: Backgrounds ─────────────────────────────────────────────────── */
+  /* ── Color: Backgrounds (Zuari Contrasting Boxiness Lightness Stops) ────── */
   --mm-bg-base:        oklch(14% 0.015 260);       /* #06070a – app canvas */
-  --mm-bg-surface:     oklch(17% 0.018 260 / 0.9); /* #0b0d14 – card bg    */
+  --mm-bg-surface:     oklch(17% 0.018 260 / 0.94);/* #0b0d14 – card bg    */
   --mm-bg-elevated:    oklch(20% 0.022 260);        /* #10131d – raised card */
   --mm-bg-hover:       oklch(23% 0.026 260);        /* #15192a – hover state */
   --mm-bg-overlay:     oklch(0% 0 0 / 0.65);        /* modal backdrop        */
 
+  /* ── Zuari Fast-Framework Aliases (dr-week/fast-framework) ──────────────── */
+  --nova-color-background:       var(--mm-bg-base);
+  --nova-color-surface:          var(--mm-bg-surface);
+  --nova-color-surface-elevated: var(--mm-bg-elevated);
+  --nova-color-border:           oklch(100% 0 0 / 0.16);
+  --nova-radius-squircle:        14px;
+
   /* ── Color: Borders ─────────────────────────────────────────────────────── */
-  --mm-border:         oklch(100% 0 0 / 0.08);      /* default border        */
-  --mm-border-hover:   oklch(100% 0 0 / 0.14);      /* hovered border        */
+  --mm-border:         oklch(100% 0 0 / 0.14);      /* crisp 1px boxiness    */
+  --mm-border-hover:   oklch(100% 0 0 / 0.22);      /* hovered border        */
   --mm-border-focus:   oklch(65% 0.22 32 / 0.5);    /* focused input border  */
-  --mm-border-subtle:  oklch(100% 0 0 / 0.04);      /* very subtle divider   */
+  --mm-border-subtle:  oklch(100% 0 0 / 0.06);      /* very subtle divider   */
 
   /* ── Color: Accent Palette ──────────────────────────────────────────────── */
   --mm-accent:         oklch(75% 0.18 190);          /* teal – primary action */

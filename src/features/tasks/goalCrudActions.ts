@@ -26,8 +26,9 @@ export function useGoalActions(
     const goal = goals.value.find((g) => g.id === id)
     if (goal) {
       goal.completed = !goal.completed
+      goal.updatedAt = new Date().toISOString()
       if (goal.completed) {
-        goal.completedAt = new Date().toISOString()
+        goal.completedAt = goal.updatedAt
         playSuccessChime()
         void triggerHaptic('heavy')
       } else {
@@ -42,6 +43,8 @@ export function useGoalActions(
     if (goalIndex !== -1) {
       const deleted = goals.value[goalIndex]
       if (deleted) {
+        deleted.deletedAt = new Date().toISOString()
+        deleted.updatedAt = deleted.deletedAt
         lastDeletedGoal.value = deleted
         lastDeletedTask.value = null
         goals.value.splice(goalIndex, 1)

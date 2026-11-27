@@ -4,7 +4,7 @@
  * Moved to /navigation/ department. Single source: navConfig.ts
  * Mobile: hidden (MobileBottomNav takes over)
  */
-import { BrainCircuit, Search } from 'lucide-vue-next'
+import { BrainCircuit, Search, Cloud } from 'lucide-vue-next'
 import { NAV_TABS } from '@/navigation/navConfig'
 import { useTasksStore } from '@/store/tasks'
 import { useUiStore } from '@/store/ui'
@@ -49,8 +49,17 @@ function openCommandPalette() {
       </button>
     </nav>
 
-    <!-- Right actions -->
+    <!-- Right actions (Ambient Plane + Drawer Trigger + Command Trigger) -->
     <div class="dock-actions">
+      <button
+        class="cmd-btn"
+        @click="uiStore.toggleCloudDrawer()"
+        :title="tasksStore.googleUser ? `Connected: ${tasksStore.googleUser.email}` : 'Google Account, Drive Sync & Gemini'"
+        type="button"
+      >
+        <Cloud :size="12" />
+        <span>{{ tasksStore.googleUser ? 'Drive Synced' : 'Google Sync' }}</span>
+      </button>
       <EveningAuditModal />
       <button class="cmd-btn" @click="openCommandPalette" title="Command Palette (Ctrl+K)" type="button">
         <Search :size="12" />

@@ -1,5 +1,5 @@
 import { triggerHaptic } from '@/services/haptics'
-import type { Task, Goal, ActiveTab } from '@/types/mindset'
+import type { Task, Goal, ActiveTab, MicroTask } from '@/types/mindset'
 import type { Ref } from 'vue'
 import { useGoalActions } from './goalCrudActions'
 import { useTaskCrudActions } from './taskCrudActions'
@@ -13,7 +13,14 @@ export function useTasksActions(context: {
   undoTimer: { value: ReturnType<typeof setTimeout> | null }
   currentTab: Ref<ActiveTab>
   taskFilter: Ref<'all' | 'high' | 'deep' | 'flow' | 'quick'>
-  createTaskEntity: (opts: { title: string; priority?: 'low' | 'medium' | 'high'; energy?: import('@/types/mindset').EnergyLevel; time?: string }) => Task
+  createTaskEntity: (opts: {
+    title: string
+    priority?: 'low' | 'medium' | 'high'
+    energy?: import('@/types/mindset').EnergyLevel
+    time?: string
+    goalId?: string | null
+    microTasks?: MicroTask[]
+  }) => Task
   createGoalEntity: (text: string, category?: 'monumental' | 'quarterly' | 'monthly', targetDate?: string) => Goal
 }) {
   const {
@@ -37,7 +44,15 @@ export function useTasksActions(context: {
     }, durationMs)
   }
 
-  const { addTask, toggleTask, deleteTask, sweepCompletedTasks } = useTaskCrudActions(
+  const {
+    addTask,
+    addMicroTask,
+    toggleMicroTask,
+    setTaskMicroTasks,
+    toggleTask,
+    deleteTask,
+    sweepCompletedTasks,
+  } = useTaskCrudActions(
     tasks,
     lastDeletedTask,
     lastDeletedGoal,
@@ -65,6 +80,9 @@ export function useTasksActions(context: {
 
   return {
     addTask,
+    addMicroTask,
+    toggleMicroTask,
+    setTaskMicroTasks,
     toggleTask,
     deleteTask,
     addGoal,

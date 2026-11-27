@@ -4,12 +4,14 @@
  * Displays active department branding, safe-area top inset, and quick actions.
  */
 import { computed } from 'vue'
-import { Search, BrainCircuit } from 'lucide-vue-next'
+import { Search, BrainCircuit, Cloud } from 'lucide-vue-next'
 import { NAV_TABS, type NavTab } from '@/navigation/navConfig'
 import { useTasksStore } from '@/store/tasks'
+import { useUiStore } from '@/store/ui'
 import EveningAuditModal from '@/components/EveningAuditModal.vue'
 
 const tasksStore = useTasksStore()
+const uiStore = useUiStore()
 
 const currentTabInfo = computed<NavTab>(() => {
   return NAV_TABS.find((t) => t.key === tasksStore.currentTab) ?? (NAV_TABS[0] as NavTab)
@@ -33,6 +35,14 @@ function openCommandPalette(): void {
     </div>
 
     <div class="header-right">
+      <button
+        @click="uiStore.toggleCloudDrawer()"
+        class="btn-mobile-search"
+        aria-label="Google Cloud & Gemini Drawer"
+        type="button"
+      >
+        <Cloud :size="15" />
+      </button>
       <EveningAuditModal />
       <button
         @click="openCommandPalette"

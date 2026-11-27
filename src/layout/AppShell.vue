@@ -12,6 +12,7 @@ import MobileTopHeader from '@/navigation/MobileTopHeader.vue'
 import NavOverflowSheet from '@/navigation/NavOverflowSheet.vue'
 import ApexHeaderDock from '@/navigation/ApexHeaderDock.vue'
 import CommandPalette from '@/navigation/CommandPalette.vue'
+import GoogleCloudDrawer from '@/navigation/GoogleCloudDrawer.vue'
 
 const { isMobile, isTablet } = useBreakpoint()
 const uiStore = useUiStore()
@@ -47,6 +48,9 @@ const contentStyle = computed(() => ({
 
     <!-- Mobile overflow bottom sheet -->
     <NavOverflowSheet :open="uiStore.isNavSheetOpen" />
+
+    <!-- Zuari Drawer Plane: Google Account, Drive Minimal DB, Fit & Gemini -->
+    <GoogleCloudDrawer :open="uiStore.isCloudDrawerOpen" />
 
     <!-- Global overlays -->
     <CommandPalette />

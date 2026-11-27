@@ -9,6 +9,7 @@ import { notificationService } from '@/services/assistant/notificationService'
 import type { MotivationNudge } from '@/types/assistant'
 import AssistantNudgesSection from './AssistantNudgesSection.vue'
 import AssistantRoutineSection from './AssistantRoutineSection.vue'
+import GeminiTaskArchitectSection from './GeminiTaskArchitectSection.vue'
 
 const tasksStore = useTasksStore()
 
@@ -50,8 +51,8 @@ async function enableNotifications(): Promise<void> {
           <Sparkles :size="20" class="text-ember" />
         </div>
         <div>
-          <h2 class="view-title">Personal Assistant & Schedule Optimizer</h2>
-          <p class="view-subtitle">Circadian schedule recommendations, psychological work triggers, and calendar sync.</p>
+          <h2 class="view-title">Gemini Strategic Co-Pilot &amp; Schedule Optimizer</h2>
+          <p class="view-subtitle">Gemini Goal-to-Micro-Step Architect, circadian schedule recommendations &amp; calendar sync.</p>
         </div>
       </div>
       <div class="header-actions">
@@ -66,6 +67,7 @@ async function enableNotifications(): Promise<void> {
       </div>
     </div>
 
+    <GeminiTaskArchitectSection />
     <AssistantNudgesSection :nudges="nudges" @select-nudge="handleNudgeSelected" />
     <AssistantRoutineSection :suggestions="routineSuggestions" @apply-suggestion="tasksStore.setTab('timetable')" />
   </div>

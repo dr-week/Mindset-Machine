@@ -3,6 +3,7 @@ import { createTaskEntity, createGoalEntity } from '@/data/tasks'
 import { useTasksActions } from '@/features/tasks/storeActions'
 import { useLifeCycleActions } from '@/features/timetable/lifecycleActions'
 import { useIntegrationsActions } from '@/features/dashboard/integrationsActions'
+import { useCloudAndGeminiActions } from '@/features/dashboard/cloudAndGeminiActions'
 import { useTasksState } from './modules/tasksState'
 import { useTasksGetters } from './modules/tasksGetters'
 import { useTasksPersistence } from './modules/tasksPersistence'
@@ -69,6 +70,21 @@ export const useTasksStore = defineStore('tasks', () => {
     setUndoToast: taskActions.setUndoToast,
   })
 
+  const cloudAndGeminiActions = useCloudAndGeminiActions({
+    tasks: state.tasks,
+    goals: state.goals,
+    habits: state.habits,
+    biometrics: state.biometrics,
+    googleUser: state.googleUser,
+    driveSync: state.driveSync,
+    loadingAi: state.loadingAi,
+    syncingHealth: state.syncingHealth,
+    addTask: taskActions.addTask,
+    addGoal: taskActions.addGoal,
+    setTaskMicroTasks: taskActions.setTaskMicroTasks,
+    setUndoToast: taskActions.setUndoToast,
+  })
+
   return {
     ...state,
     ...getters,
@@ -76,5 +92,6 @@ export const useTasksStore = defineStore('tasks', () => {
     ...taskActions,
     ...lifecycleActions,
     ...integrationActions,
+    ...cloudAndGeminiActions,
   }
 })

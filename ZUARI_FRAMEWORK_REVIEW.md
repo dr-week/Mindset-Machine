@@ -32,9 +32,21 @@ By shifting computation away from runtime JavaScript loops into browser-native p
 
 ## 3. MINDSET Adoption & Integration
 
-| Zuari Module | Integrated Role in MINDSET |
+| Zuari Module (`dr-week/fast-framework`) | Integrated Role in MINDSET |
 | :--- | :--- |
-| **`@zuari/recipes`** | Imported directly into `src/styles/zuari/`. Powers `.nova-glyph-dock`, `.nova-glyph-tile`, `.nova-glyph-tooltip`, `.zuari-card`, and `.zuari-badge`. |
-| **`@zuari/glyphs`** | Vector glyph library in `src/glyphs/` providing mathematical icons and morphing path definitions. |
-| **`Aether-Glyph UI`** | Apex navigation dock transformed into an icon-first floating ribbon with hover anchor tooltips. |
-| **`Zero-Monolith Rule`** | Monolithic `DashboardView.vue` (3,400 lines) refactored into modular sub-components under `src/components/dashboard/`, `timetable/`, `notes/`, and `vault/`. |
+| **`@zuari/presets/division` (5-Plane Matrix)** | Ported into `src/design-system/planes/featureDivision.ts`. Divides all features into **Surface**, **Dock**, **Drawer** (`GoogleCloudDrawer.vue`), **Command** (`CommandPalette.vue`), and **Ambient** planes. |
+| **`Contrasting Boxiness`** | Stepped OKLCH lightness stops (`--nova-color-background`, `--nova-color-surface`, `--nova-color-surface-elevated`) and crisp `1px` borders in `src/design-system/tokens/design-tokens.css`. |
+| **`@zuari/ai` Workflow Pattern** | Powers `src/services/ai/geminiClient.ts` (`gemini-2.5-flash`) for hierarchical **Goal $\rightarrow$ Task $\rightarrow$ Micro-Tasks & Steps** decomposition. |
+| **`@zuari/sync` Minimal Delta Compaction** | Powers `src/services/google/minimalTaskDbSerializer.ts` and `googleDriveSyncService.ts` (`>65%` payload reduction stored in Google Drive `appDataFolder`). |
+| **`@zuari/recipes` & `@zuari/glyphs`** | Imported in `src/styles/zuari/` and `src/glyphs/` for icon-first affordance and scoped cards. |
+| **`Zero-Monolith Rule (< 150 lines)`** | All 72+ Vue components and TypeScript modules strictly audited via `scripts/dev/audit-monoliths.py`. |
+
+---
+
+## 4. Similar GitHub Projects Leveraged to Accelerate Engineering
+
+1. **[`dr-week/fast-framework`](https://github.com/dr-week/fast-framework)** — 5-Plane UI/UX Feature Division Matrix, Contrasting Boxiness tokens, `@zuari/ai` workflow controller, `@zuari/sync` compact storage patterns, and `scripts/dev/research-reuse.mjs`.
+2. **[`Ywtoo/ToDoFeito`](https://github.com/Ywtoo/ToDoFeito)** — Deterministic offline-first task synchronization pattern for Google Drive `appDataFolder`.
+3. **[`imxade/kitsy`](https://github.com/imxade/kitsy)** — Local-first client-side task storage with optional Google Drive sync when online.
+4. **[`publius-github/hypomnema`](https://github.com/publius-github/hypomnema)** — Zero-server sovereign task/notes synchronization via personal Google Drive.
+

@@ -24,7 +24,7 @@ def run_step(step_name: str, cmd: list[str]) -> bool:
     print(f">> RUNNING: {step_name}")
     print(f"Command: {' '.join(cmd)}")
     print("=" * 50)
-    result = subprocess.run(cmd, cwd=ROOT_DIR, shell=True)
+    result = subprocess.run(" ".join(cmd), cwd=ROOT_DIR, shell=True)
     if result.returncode != 0:
         print(f"[FAIL] {step_name} (exit code {result.returncode})")
         return False
@@ -33,8 +33,8 @@ def run_step(step_name: str, cmd: list[str]) -> bool:
 
 def main():
     steps = [
-        ("Monolith Audit (< 150 lines)", ["python", "scripts/dev/audit-monoliths.py"]),
-        ("UI/UX & Mobile Alignment Audit", ["python", "scripts/dev/audit-uiux.py"]),
+        ("Monolith Audit (< 150 lines)", [sys.executable, "scripts/dev/audit-monoliths.py"]),
+        ("UI/UX & Mobile Alignment Audit", [sys.executable, "scripts/dev/audit-uiux.py"]),
         ("TypeScript Type-Check", ["npm", "run", "type-check"]),
         ("Unit Tests (Vitest)", ["npm", "test"]),
         ("Vite Production Build", ["npm", "run", "build-only"]),

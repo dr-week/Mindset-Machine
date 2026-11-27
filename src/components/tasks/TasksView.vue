@@ -80,6 +80,9 @@ const completedCount = computed(() => tasksStore.completedTasks.length)
         :task="task"
         @toggle="tasksStore.toggleTask($event)"
         @delete="tasksStore.deleteTask($event)"
+        @decompose-gemini="tasksStore.decomposeTaskWithGemini($event)"
+        @toggle-step="tasksStore.toggleMicroTask($event.taskId, $event.stepId)"
+        @add-step="tasksStore.addMicroTask($event.taskId, $event.title)"
       />
     </div>
   </div>

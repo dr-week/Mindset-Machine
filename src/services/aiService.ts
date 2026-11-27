@@ -1,6 +1,13 @@
 import type { Task, Goal } from '@/types/mindset'
 import { tryOllamaRequest } from './ai/ollamaClient'
 import { getOfflineTaskSuggestions, getOfflineMotivation } from './ai/heuristics'
+import {
+  callGeminiJson,
+  generateGeminiGoalBreakdown,
+  generateGeminiMicroStepsForTask,
+} from './ai/geminiClient'
+
+export { generateGeminiGoalBreakdown, generateGeminiMicroStepsForTask }
 
 export async function fetchFutureTasks(tasks: Task[], goals: Goal[]): Promise<string[]> {
   const systemPrompt =
@@ -8,6 +15,11 @@ export async function fetchFutureTasks(tasks: Task[], goals: Goal[]): Promise<st
   const userMessage = `Current tasks: ${JSON.stringify(tasks)}\n\nCurrent goals: ${JSON.stringify(goals)}`
 
   try {
+    const geminiList = await callGeminiJson<string[]>(systemPrompt, userMessage)
+    if (Array.isArray(geminiList) && geminiList.length > 0) {
+      return geminiList.map(String)
+    }
+
     const ollamaContent = await tryOllamaRequest(`${systemPrompt}\n\n${userMessage}`)
     if (ollamaContent) {
       try {

@@ -2,6 +2,7 @@ import { triggerHaptic } from '@/services/haptics'
 import { playSuccessChime } from '@/services/audioFeedback'
 import { fetchFutureTasks, fetchAiMotivation } from '@/services/aiService'
 import { syncHealthBiometrics } from '@/services/healthConnect'
+import { googleFitService } from '@/services/googleFit/googleFitService'
 import { wearableManager } from '@/services/wearableBridge'
 import { createAiSuggestionEntity } from '@/data/tasks'
 import type { Task, Goal, AiSuggestion, BiometricTelemetry } from '@/types/mindset'
@@ -36,9 +37,19 @@ export function useIntegrationsActions(context: {
   async function syncHealthData(): Promise<void> {
     syncingHealth.value = true
     try {
-      const data = await syncHealthBiometrics()
-      biometrics.value = data
-      setUndoToast(`Biometrics synced: ${data.recoveryScore}% Recovery Readiness`, 4000)
+      const [data, fit] = await Promise.all([
+        syncHealthBiometrics(),
+        googleFitService.fetchDailyActivityMetrics(),
+      ])
+      biometrics.value = {
+        ...data,
+        stepCount: fit.steps || data.stepCount,
+        restingHeartRate: fit.restingHeartRate || data.restingHeartRate,
+        sleepHours: fit.sleepHours || data.sleepHours,
+        recoveryScore: fit.recoveryScore || data.recoveryScore,
+        source: googleFitService.getEffectiveToken() ? 'google_fit' : data.source,
+      }
+      setUndoToast(`Google Fit & Health synced: ${biometrics.value.recoveryScore}% Readiness`, 4000)
       playSuccessChime()
       void triggerHaptic('medium')
     } finally {
