@@ -37,6 +37,8 @@ All data remains strictly on your device with sub-millisecond local reactivity a
 ## Downloads & Official Release
 
 > 🚀 **Official Production Release v1.0.0**: [View Release Assets & Checksums on GitHub](https://github.com/dr-week/Mindset-Machine/releases/tag/v1.0.0)
+>
+> 🌐 **Live Web App**: https://dr-week.github.io/Mindset-Machine/ &bull; **Showcase & Downloads**: https://dr-week.github.io/Mindset-Machine/download.html
 
 | Package | Format | Size | Download & Details |
 | :--- | :--- | :--- | :--- |
