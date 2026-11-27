@@ -10,6 +10,7 @@ import { useTasksStore } from '@/store/tasks'
 import { useUiStore } from '@/store/ui'
 import { getGeminiApiKey, setGeminiApiKey } from '@/services/ai/geminiClient'
 import HybridStorageSettings from '@/components/settings/HybridStorageSettings.vue'
+import ApiConnectionsList from '@/components/settings/ApiConnectionsList.vue'
 
 defineProps<{ open: boolean }>()
 
@@ -62,6 +63,9 @@ function handleSaveGeminiKey(): void {
               </button>
             </div>
           </section>
+
+          <!-- API Connections & Department Telemetry -->
+          <ApiConnectionsList />
         </aside>
       </div>
     </Transition>
